@@ -1,0 +1,82 @@
+Wave Energy Density Analysis through Vegetation
+==============================================
+Author: Sandy Herho <sandy.herho@email.ucr.edu>
+Date: 08/04/2025
+
+SIMULATION PARAMETERS
+---------------------
+Domain length: 200 m
+Water depth: 2 m
+Wave amplitude: 0.3 m
+Wave period: 10 s
+Vegetation zone: 80-120 m
+Water density: 1000 kg/m³
+Gravitational acceleration: 9.81 m/s²
+
+WAVE ENERGY DENSITY ANALYSIS
+============================
+
+Dense Vegetation (cD = 1.4 s⁻¹):
+--------------------------------
+Peak energy density: 910.9 J/m³
+Minimum energy density: 0.0 J/m³
+
+Time-averaged energy density:
+  Before vegetation (x < 80 m): 454.4 J/m³
+  Within vegetation (80 ≤ x ≤ 120 m): 47.4 J/m³
+  After vegetation (x > 120 m): 0.1 J/m³
+
+Energy dissipation: 100.0%
+
+Sparse Vegetation (cD = 0.14 s⁻¹):
+----------------------------------
+Peak energy density: 1479.0 J/m³
+Minimum energy density: 358.9 J/m³
+
+Time-averaged energy density:
+  Before vegetation (x < 80 m): 737.0 J/m³
+  Within vegetation (80 ≤ x ≤ 120 m): 491.5 J/m³
+  After vegetation (x > 120 m): 363.5 J/m³
+
+Energy dissipation: 50.7%
+
+WAVE ENERGY FLUX ANALYSIS
+=========================
+Group velocity (shallow water): 4.43 m/s
+
+Dense Vegetation:
+-----------------
+Energy flux before vegetation: 2012.8 W/m
+Energy flux after vegetation: 0.2 W/m
+Flux reduction: 100.0%
+
+Sparse Vegetation:
+------------------
+Energy flux before vegetation: 3264.4 W/m
+Energy flux after vegetation: 1610.0 W/m
+Flux reduction: 50.7%
+
+POWER DISSIPATION
+=================
+Power dissipated per unit width within vegetation zone:
+  Dense vegetation: 50.3 W/m²
+  Sparse vegetation: 41.4 W/m²
+
+Dissipation effectiveness ratio (Dense/Sparse): 1.22
+
+ENERGY-BASED TRANSMISSION COEFFICIENT
+=====================================
+Kt,E = sqrt(E_out/E_in):
+  Dense vegetation: 0.010
+  Sparse vegetation: 0.702
+
+SUMMARY
+=======
+The dense vegetation (cD = 1.4 s⁻¹) dissipates 100.0% of the incident
+wave energy, while sparse vegetation (cD = 0.14 s⁻¹) dissipates 50.7%.
+This corresponds to a 1.2-fold increase
+in dissipation effectiveness for the denser canopy.
+
+The energy-based transmission coefficients confirm the wave height-based values,
+validating the numerical solution and demonstrating the strong attenuation
+capacity of dense vegetation for coastal protection applications.
