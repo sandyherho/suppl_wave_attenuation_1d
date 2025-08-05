@@ -36,7 +36,6 @@ env/
 # Project specific
 outputs/
 logs/
-*.nc
 *.log
 
 # PyPI
