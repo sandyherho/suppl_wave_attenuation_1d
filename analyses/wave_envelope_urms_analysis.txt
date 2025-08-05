@@ -1,0 +1,70 @@
+Wave Attenuation through Vegetation: Analysis Results
+====================================================
+Author: Sandy Herho <sandy.herho@email.ucr.edu>
+Date: 08/04/2025
+
+SIMULATION PARAMETERS
+---------------------
+Domain length: 200 m
+Water depth: 2 m
+Wave amplitude: 0.3 m
+Wave period: 10 s
+Vegetation zone: 80-120 m
+Dense vegetation drag coefficient: 1.4 s^-1
+Sparse vegetation drag coefficient: 0.14 s^-1
+
+WAVE ENVELOPE ANALYSIS
+----------------------
+
+Dense Vegetation (cD = 1.4 s^-1):
+----------------------------------
+Maximum amplitude: 0.3678 m at x = 62.0 m
+Minimum amplitude: 0.0010 m at x = 144.5 m
+Mean amplitude before vegetation (x < 80 m): 0.2742 m
+Mean amplitude within vegetation (80 ≤ x ≤ 120 m): 0.0711 m
+Mean amplitude after vegetation (x > 120 m): 0.0029 m
+Amplitude reduction: 98.9%
+
+Sparse Vegetation (cD = 0.14 s^-1):
+-----------------------------------
+Maximum amplitude: 0.4817 m at x = 44.5 m
+Minimum amplitude: 0.0245 m at x = 144.5 m
+Mean amplitude before vegetation (x < 80 m): 0.3690 m
+Mean amplitude within vegetation (80 ≤ x ≤ 120 m): 0.3093 m
+Mean amplitude after vegetation (x > 120 m): 0.2420 m
+Amplitude reduction: 34.4%
+
+Amplitude Reduction Ratio (Dense/Sparse): 2.87
+
+RMS VELOCITY ANALYSIS
+---------------------
+
+Dense Vegetation (cD = 1.4 s^-1):
+----------------------------------
+Maximum RMS velocity: 0.6548 m/s at x_face = 5.8 m
+Minimum RMS velocity: 0.0004 m/s at x_face = 133.2 m
+Mean RMS velocity before vegetation (x_face < 80 m): 0.4925 m/s
+Mean RMS velocity within vegetation (80 ≤ x_face ≤ 120 m): 0.0687 m/s
+Mean RMS velocity after vegetation (x_face > 120 m): 0.0032 m/s
+Velocity reduction: 99.4%
+
+Sparse Vegetation (cD = 0.14 s^-1):
+-----------------------------------
+Maximum RMS velocity: 0.7665 m/s at x_face = 76.8 m
+Minimum RMS velocity: 0.0421 m/s at x_face = 133.2 m
+Mean RMS velocity before vegetation (x_face < 80 m): 0.6060 m/s
+Mean RMS velocity within vegetation (80 ≤ x_face ≤ 120 m): 0.4448 m/s
+Mean RMS velocity after vegetation (x_face > 120 m): 0.3914 m/s
+Velocity reduction: 35.4%
+
+Velocity Reduction Ratio (Dense/Sparse): 2.81
+
+TRANSMISSION COEFFICIENTS
+-------------------------
+Wave Height Transmission (Kt = H_out/H_in):
+Dense vegetation: 0.011
+Sparse vegetation: 0.656
+
+Energy Transmission (Kt,E = E_out/E_in):
+Dense vegetation: 0.000
+Sparse vegetation: 0.430
