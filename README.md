@@ -4,7 +4,7 @@
 [![License: WTFPL](https://img.shields.io/badge/License-WTFPL-brightgreen.svg)](http://www.wtfpl.net/)
 [![DOI](https://zenodo.org/badge/1032205258.svg)](https://doi.org/10.5281/zenodo.16742589)
 
-Supplementary data and analysis for: *"An idealized one-dimensional framework for wave attenuation through coastal vegetation using Numba-accelerated shallow water equations"*
+Supplementary data and analysis for: *"wave-attenuation-1d: An idealized one-dimensional framework for wave attenuation through coastal vegetation using Numba-accelerated shallow water equations"*
 
 **Authors:** Sandy H. S. Herho¹²³*, Iwan P. Anwar²³, Theo R. E. B. N. Ndruru²³, Rusmawan Suwarman⁴, Dasapta E. Irawan⁵  
 **Corresponding author:** sandy.herho@email.ucr.edu
