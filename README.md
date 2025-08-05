@@ -2,7 +2,7 @@
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: WTFPL](https://img.shields.io/badge/License-WTFPL-brightgreen.svg)](http://www.wtfpl.net/)
-[![PyPI version](https://badge.fury.io/py/wave-attenuation-1d.svg)](https://pypi.org/project/wave-attenuation-1d/)
+[![DOI](https://zenodo.org/badge/1032205258.svg)](https://doi.org/10.5281/zenodo.16742589)
 
 Supplementary data and analysis for: *"An idealized one-dimensional framework for wave attenuation through coastal vegetation using Numba-accelerated shallow water equations"*
 
