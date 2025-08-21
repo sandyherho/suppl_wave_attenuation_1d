@@ -6,10 +6,9 @@
 
 Supplementary data and analysis for: *"wave-attenuation-1d: An idealized one-dimensional framework for wave attenuation through coastal vegetation using Numba-accelerated shallow water equations"*
 
-**Authors:** Sandy H. S. Herho¹²³*, Iwan P. Anwar²³, Theo R. E. B. N. Ndruru²³, Rusmawan Suwarman⁴, Dasapta E. Irawan⁵  
+**Authors:** Sandy H. S. Herho, Iwan P. Anwar, Faruq Khadami, Theo R. E. B. N. Ndruru, Rusmawan Suwarman⁴, Dasapta E. Irawan
 **Corresponding author:** sandy.herho@email.ucr.edu
 
-<sup>¹UC Riverside, USA; ²Applied & Environmental Oceanography, ITB; ³SST Ltd.; ⁴Atmospheric Science, ITB; ⁵Applied Geology, ITB</sup>
 
 ## Overview
 
@@ -62,7 +61,7 @@ For the main `wave-attenuation-1d` package, see: https://pypi.org/project/wave-a
 
 ```bibtex
 @article{herho2025wave,
-  author = {Herho, Sandy H. S. and Anwar, Iwan P. and Ndruru, Theo R. E. B. N. 
+  author = {Herho, Sandy H. S. and Anwar, Iwan P. and Khadami, F. and Ndruru, Theo R. E. B. N. 
             and Suwarman, Rusmawan and Irawan, Dasapta E.},
   title = {wave-attenuation-1d: An idealized one-dimensional framework 
            for wave attenuation through coastal vegetation},
