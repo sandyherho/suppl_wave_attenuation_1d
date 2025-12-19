@@ -127,7 +127,7 @@ def create_eta_3d_plot(data, figs_dir):
     
     # Create gridspec for precise layout control
     gs = gridspec.GridSpec(2, 2, height_ratios=[1, 0.05], width_ratios=[1, 1],
-                           hspace=0.02, wspace=0.25)
+                           hspace=0.02, wspace=0.35)
     
     # Left panel - Dense vegetation (a)
     ax1 = fig.add_subplot(gs[0, 0], projection='3d')
@@ -147,7 +147,7 @@ def create_eta_3d_plot(data, figs_dir):
     # Set labels
     ax1.set_xlabel(r'$x$ [m]', labelpad=8)
     ax1.set_ylabel(r'$t$ [s]', labelpad=8)
-    ax1.set_zlabel(r'$\eta$ [m]', labelpad=8)
+    ax1.set_zlabel(r'$\eta$ [m]', labelpad=0)
     
     # Panel label
     ax1.text2D(0.05, 0.92, '(a)', transform=ax1.transAxes, fontsize=12, fontweight='bold')
@@ -185,7 +185,7 @@ def create_eta_3d_plot(data, figs_dir):
     # Set labels
     ax2.set_xlabel(r'$x$ [m]', labelpad=8)
     ax2.set_ylabel(r'$t$ [s]', labelpad=8)
-    ax2.set_zlabel(r'$\eta$ [m]', labelpad=8)
+    ax2.set_zlabel(r'$\eta$ [m]', labelpad=0)
     
     # Panel label
     ax2.text2D(0.05, 0.92, '(b)', transform=ax2.transAxes, fontsize=12, fontweight='bold')
@@ -251,7 +251,7 @@ def create_energy_3d_plot(data, figs_dir):
     
     # Create gridspec for precise layout control
     gs = gridspec.GridSpec(2, 2, height_ratios=[1, 0.05], width_ratios=[1, 1],
-                           hspace=0.02, wspace=0.25)
+                           hspace=0.02, wspace=0.35)
     
     # Left panel - Dense vegetation (a)
     ax1 = fig.add_subplot(gs[0, 0], projection='3d')
@@ -261,17 +261,17 @@ def create_energy_3d_plot(data, figs_dir):
                               linewidth=0, antialiased=True, alpha=0.95,
                               rcount=80, ccount=80, shade=True)
     
-    # Add vegetation zone boundary lines
+    # Add vegetation zone boundary lines (green)
     for t_val in [t_sub[0], t_sub[-1]]:
         ax1.plot([veg_start, veg_start], [t_val, t_val], [energy_min, energy_max], 
-                'w--', linewidth=1.2, alpha=0.9)
+                'g--', linewidth=1.2, alpha=0.9)
         ax1.plot([veg_end, veg_end], [t_val, t_val], [energy_min, energy_max], 
-                'w--', linewidth=1.2, alpha=0.9)
+                'g--', linewidth=1.2, alpha=0.9)
     
     # Set labels
     ax1.set_xlabel(r'$x$ [m]', labelpad=8)
     ax1.set_ylabel(r'$t$ [s]', labelpad=8)
-    ax1.set_zlabel(r'$E$ [J/m$^3$]', labelpad=8)
+    ax1.set_zlabel(r'$E$ [J/m$^3$]', labelpad=0)
     
     # Panel label
     ax1.text2D(0.05, 0.92, '(a)', transform=ax1.transAxes, fontsize=12, fontweight='bold')
@@ -299,17 +299,17 @@ def create_energy_3d_plot(data, figs_dir):
                               linewidth=0, antialiased=True, alpha=0.95,
                               rcount=80, ccount=80, shade=True)
     
-    # Add vegetation zone boundary lines
+    # Add vegetation zone boundary lines (green)
     for t_val in [t_sub[0], t_sub[-1]]:
         ax2.plot([veg_start, veg_start], [t_val, t_val], [energy_min, energy_max], 
-                'w--', linewidth=1.2, alpha=0.9)
+                'g--', linewidth=1.2, alpha=0.9)
         ax2.plot([veg_end, veg_end], [t_val, t_val], [energy_min, energy_max], 
-                'w--', linewidth=1.2, alpha=0.9)
+                'g--', linewidth=1.2, alpha=0.9)
     
     # Set labels
     ax2.set_xlabel(r'$x$ [m]', labelpad=8)
     ax2.set_ylabel(r'$t$ [s]', labelpad=8)
-    ax2.set_zlabel(r'$E$ [J/m$^3$]', labelpad=8)
+    ax2.set_zlabel(r'$E$ [J/m$^3$]', labelpad=0)
     
     # Panel label
     ax2.text2D(0.05, 0.92, '(b)', transform=ax2.transAxes, fontsize=12, fontweight='bold')
