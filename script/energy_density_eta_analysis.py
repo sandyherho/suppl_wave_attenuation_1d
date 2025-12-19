@@ -1,19 +1,23 @@
 #!/usr/bin/env python
 """
 3D Spatio-Temporal Analysis of Wave Propagation through Vegetation
-Modified version with improved figure spacing for better z-label visibility
+Revised version with 1x2 layout, surface plots and horizontal colorbars
 
 This script creates 3D visualizations of free surface elevation and wave energy density
 evolution through sparse and dense vegetation patches, with quantitative analysis.
 
 Author: Sandy Herho <sandy.herho@email.ucr.edu>
 Date: 08/04/2025
+Revised: 12/18/2025
 """
 
 import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+from matplotlib.colors import Normalize
+import matplotlib.gridspec as gridspec
 import os
 from pathlib import Path
 
@@ -29,16 +33,18 @@ def setup_directories():
 
 def setup_plotting():
     """Configure matplotlib for publication-quality figures."""
-    plt.style.use('seaborn-v0_8-whitegrid')
-    plt.rcParams['font.size'] = 12
-    plt.rcParams['axes.labelsize'] = 14
-    plt.rcParams['axes.titlesize'] = 16
-    plt.rcParams['xtick.labelsize'] = 12
-    plt.rcParams['ytick.labelsize'] = 12
-    plt.rcParams['legend.fontsize'] = 12
+    plt.rcParams['font.size'] = 10
+    plt.rcParams['axes.labelsize'] = 11
+    plt.rcParams['axes.titlesize'] = 12
+    plt.rcParams['xtick.labelsize'] = 9
+    plt.rcParams['ytick.labelsize'] = 9
+    plt.rcParams['legend.fontsize'] = 9
     plt.rcParams['figure.dpi'] = 300
-    plt.rcParams['text.usetex'] = False  # Set to True if LaTeX is available
+    plt.rcParams['text.usetex'] = False
     plt.rcParams['font.family'] = 'DejaVu Sans'
+    plt.rcParams['mathtext.fontset'] = 'dejavusans'
+    plt.rcParams['axes.linewidth'] = 0.6
+    plt.rcParams['grid.linewidth'] = 0.4
 
 def load_and_process_data():
     """Load data from NetCDF files."""
@@ -92,12 +98,12 @@ def load_and_process_data():
     return data
 
 def create_eta_3d_plot(data, figs_dir):
-    """Create 3D plot of free surface elevation with improved spacing."""
+    """Create 3D surface plot of free surface elevation with 1x2 layout and horizontal colorbar."""
     print("Creating 3D free surface elevation plot...")
     
     # Subsample for cleaner visualization
-    skip_x = 8
-    skip_t = 20
+    skip_x = 3
+    skip_t = 8
     
     x_sub = data['x'][::skip_x]
     t_sub = data['t'][::skip_t]
@@ -111,104 +117,118 @@ def create_eta_3d_plot(data, figs_dir):
     veg_start = 80
     veg_end = 120
     
-    # Determine common z-axis limits for eta
+    # Determine common colorbar limits for eta
     eta_min = min(np.min(eta_dense_sub), np.min(eta_sparse_sub))
     eta_max = max(np.max(eta_dense_sub), np.max(eta_sparse_sub))
-    eta_lim = max(abs(eta_min), abs(eta_max)) * 1.1  # Add 10% margin
+    norm = Normalize(vmin=eta_min, vmax=eta_max)
     
-    # Create figure with explicit size and DPI
-    fig = plt.figure(figsize=(16, 12), dpi=100)
+    # Create figure with 1x2 layout
+    fig = plt.figure(figsize=(14, 6))
     
-    # Top panel - Dense vegetation
-    ax1 = fig.add_subplot(211, projection='3d')
+    # Create gridspec for precise layout control
+    gs = gridspec.GridSpec(2, 2, height_ratios=[1, 0.05], width_ratios=[1, 1],
+                           hspace=0.02, wspace=0.25)
     
-    # Create the wireframe
-    ax1.plot_wireframe(X, T, eta_dense_sub, color='black', linewidth=0.5, alpha=0.8)
+    # Left panel - Dense vegetation (a)
+    ax1 = fig.add_subplot(gs[0, 0], projection='3d')
     
-    # Add vegetation zone indicators
+    # Create surface plot with better resolution
+    surf1 = ax1.plot_surface(X, T, eta_dense_sub, cmap='RdBu_r', norm=norm,
+                              linewidth=0, antialiased=True, alpha=0.95,
+                              rcount=80, ccount=80, shade=True)
+    
+    # Add vegetation zone boundary lines
     for t_val in [t_sub[0], t_sub[-1]]:
-        ax1.plot([veg_start, veg_start], [t_val, t_val], [-eta_lim, eta_lim], 
-                'g--', linewidth=2, alpha=0.6)
-        ax1.plot([veg_end, veg_end], [t_val, t_val], [-eta_lim, eta_lim], 
-                'g--', linewidth=2, alpha=0.6)
+        ax1.plot([veg_start, veg_start], [t_val, t_val], [eta_min, eta_max], 
+                'g--', linewidth=1.2, alpha=0.9)
+        ax1.plot([veg_end, veg_end], [t_val, t_val], [eta_min, eta_max], 
+                'g--', linewidth=1.2, alpha=0.9)
     
-    # Set labels with spacing
-    ax1.set_xlabel(r'Distance $x$ [m]', labelpad=15)
-    ax1.set_ylabel(r'Time $t$ [s]', labelpad=15)
+    # Set labels
+    ax1.set_xlabel(r'$x$ [m]', labelpad=8)
+    ax1.set_ylabel(r'$t$ [s]', labelpad=8)
+    ax1.set_zlabel(r'$\eta$ [m]', labelpad=8)
     
-    # Z-label with special handling
-    ax1.set_zlabel(r'$\eta$ [m]', labelpad=25)
-    ax1.zaxis.set_rotate_label(False)  # Prevent rotation
+    # Panel label
+    ax1.text2D(0.05, 0.92, '(a)', transform=ax1.transAxes, fontsize=12, fontweight='bold')
     
-    ax1.set_title('(a)', fontsize=16, loc='left', pad=10)
-    ax1.view_init(elev=20, azim=-50)  # Adjusted for better z-label visibility
+    ax1.view_init(elev=22, azim=-50)
     ax1.set_xlim(0, 200)
     ax1.set_ylim(t_sub[0], t_sub[-1])
-    ax1.set_zlim(-eta_lim, eta_lim)
-    ax1.grid(True, alpha=0.3)
+    ax1.set_zlim(eta_min, eta_max)
+    
+    # Clean appearance
     ax1.xaxis.pane.fill = False
     ax1.yaxis.pane.fill = False
     ax1.zaxis.pane.fill = False
+    ax1.xaxis.pane.set_edgecolor('lightgray')
+    ax1.yaxis.pane.set_edgecolor('lightgray')
+    ax1.zaxis.pane.set_edgecolor('lightgray')
+    ax1.grid(True, alpha=0.25, linestyle='-', linewidth=0.4)
+    ax1.tick_params(axis='both', which='major', labelsize=8, pad=2)
     
-    # Adjust tick parameters for z-axis
-    ax1.tick_params(axis='z', which='major', pad=10)
+    # Right panel - Sparse vegetation (b)
+    ax2 = fig.add_subplot(gs[0, 1], projection='3d')
     
-    # Bottom panel - Sparse vegetation
-    ax2 = fig.add_subplot(212, projection='3d')
+    # Create surface plot
+    surf2 = ax2.plot_surface(X, T, eta_sparse_sub, cmap='RdBu_r', norm=norm,
+                              linewidth=0, antialiased=True, alpha=0.95,
+                              rcount=80, ccount=80, shade=True)
     
-    # Create the wireframe
-    ax2.plot_wireframe(X, T, eta_sparse_sub, color='black', linewidth=0.5, alpha=0.8)
-    
-    # Add vegetation zone indicators
+    # Add vegetation zone boundary lines
     for t_val in [t_sub[0], t_sub[-1]]:
-        ax2.plot([veg_start, veg_start], [t_val, t_val], [-eta_lim, eta_lim], 
-                'g--', linewidth=2, alpha=0.6)
-        ax2.plot([veg_end, veg_end], [t_val, t_val], [-eta_lim, eta_lim], 
-                'g--', linewidth=2, alpha=0.6)
+        ax2.plot([veg_start, veg_start], [t_val, t_val], [eta_min, eta_max], 
+                'g--', linewidth=1.2, alpha=0.9)
+        ax2.plot([veg_end, veg_end], [t_val, t_val], [eta_min, eta_max], 
+                'g--', linewidth=1.2, alpha=0.9)
     
-    # Set labels with spacing
-    ax2.set_xlabel(r'Distance $x$ [m]', labelpad=15)
-    ax2.set_ylabel(r'Time $t$ [s]', labelpad=15)
+    # Set labels
+    ax2.set_xlabel(r'$x$ [m]', labelpad=8)
+    ax2.set_ylabel(r'$t$ [s]', labelpad=8)
+    ax2.set_zlabel(r'$\eta$ [m]', labelpad=8)
     
-    # Z-label with special handling
-    ax2.set_zlabel(r'$\eta$ [m]', labelpad=25)
-    ax2.zaxis.set_rotate_label(False)  # Prevent rotation
+    # Panel label
+    ax2.text2D(0.05, 0.92, '(b)', transform=ax2.transAxes, fontsize=12, fontweight='bold')
     
-    ax2.set_title('(b)', fontsize=16, loc='left', pad=10)
-    ax2.view_init(elev=20, azim=-50)  # Adjusted for better z-label visibility
+    ax2.view_init(elev=22, azim=-50)
     ax2.set_xlim(0, 200)
     ax2.set_ylim(t_sub[0], t_sub[-1])
-    ax2.set_zlim(-eta_lim, eta_lim)
-    ax2.grid(True, alpha=0.3)
+    ax2.set_zlim(eta_min, eta_max)
+    
+    # Clean appearance
     ax2.xaxis.pane.fill = False
     ax2.yaxis.pane.fill = False
     ax2.zaxis.pane.fill = False
+    ax2.xaxis.pane.set_edgecolor('lightgray')
+    ax2.yaxis.pane.set_edgecolor('lightgray')
+    ax2.zaxis.pane.set_edgecolor('lightgray')
+    ax2.grid(True, alpha=0.25, linestyle='-', linewidth=0.4)
+    ax2.tick_params(axis='both', which='major', labelsize=8, pad=2)
     
-    # Adjust tick parameters for z-axis
-    ax2.tick_params(axis='z', which='major', pad=10)
+    # Add horizontal colorbar spanning both panels at bottom
+    cbar_ax = fig.add_axes([0.15, 0.08, 0.7, 0.025])
+    cbar = fig.colorbar(surf1, cax=cbar_ax, orientation='horizontal')
+    cbar.set_label(r'$\eta$ [m]', fontsize=11, labelpad=5)
+    cbar.ax.tick_params(labelsize=9)
     
-    # Use tight layout with extra padding
-    plt.tight_layout(pad=3.0)
-    
-    # Save with manual bbox to ensure nothing is cut off
-    # Get the full extent of the figure
     plt.savefig(figs_dir / 'eta_3d_spatiotemporal.png', 
                 dpi=300, 
                 bbox_inches='tight',
-                pad_inches=1.0,
                 facecolor='white',
-                edgecolor='none')
+                edgecolor='none',
+                pad_inches=0.1)
     plt.close()
+    print("  Saved: eta_3d_spatiotemporal.png")
 
 def create_energy_3d_plot(data, figs_dir):
-    """Create 3D plot of wave energy density with improved spacing."""
+    """Create 3D surface plot of wave energy density with 1x2 layout and horizontal colorbar."""
     print("Creating 3D wave energy density plot...")
     
     # Subsample for cleaner visualization
-    skip_x = 8
-    skip_t = 20
+    skip_x = 3
+    skip_t = 8
     
-    # Energy is defined on x_face, so we need to handle the indexing carefully
+    # Energy is defined on x_face
     x_face_sub = data['x_face'][::skip_x]
     t_sub = data['t'][::skip_t]
     energy_dense_sub = data['energy_dense'][::skip_t, ::skip_x]
@@ -221,92 +241,108 @@ def create_energy_3d_plot(data, figs_dir):
     veg_start = 80
     veg_end = 120
     
-    # Determine common z-axis limits for energy
+    # Determine common colorbar limits for energy
+    energy_min = 0
     energy_max = max(np.max(energy_dense_sub), np.max(energy_sparse_sub))
-    energy_min = 0  # Energy density is always positive
+    norm = Normalize(vmin=energy_min, vmax=energy_max)
     
-    # Create figure with explicit size and DPI
-    fig = plt.figure(figsize=(16, 12), dpi=100)
+    # Create figure with 1x2 layout
+    fig = plt.figure(figsize=(14, 6))
     
-    # Top panel - Dense vegetation
-    ax1 = fig.add_subplot(211, projection='3d')
+    # Create gridspec for precise layout control
+    gs = gridspec.GridSpec(2, 2, height_ratios=[1, 0.05], width_ratios=[1, 1],
+                           hspace=0.02, wspace=0.25)
     
-    # Create the wireframe
-    ax1.plot_wireframe(X, T, energy_dense_sub, color='black', linewidth=0.5, alpha=0.8)
+    # Left panel - Dense vegetation (a)
+    ax1 = fig.add_subplot(gs[0, 0], projection='3d')
     
-    # Add vegetation zone indicators
+    # Create surface plot
+    surf1 = ax1.plot_surface(X, T, energy_dense_sub, cmap='plasma', norm=norm,
+                              linewidth=0, antialiased=True, alpha=0.95,
+                              rcount=80, ccount=80, shade=True)
+    
+    # Add vegetation zone boundary lines
     for t_val in [t_sub[0], t_sub[-1]]:
         ax1.plot([veg_start, veg_start], [t_val, t_val], [energy_min, energy_max], 
-                'g--', linewidth=2, alpha=0.6)
+                'w--', linewidth=1.2, alpha=0.9)
         ax1.plot([veg_end, veg_end], [t_val, t_val], [energy_min, energy_max], 
-                'g--', linewidth=2, alpha=0.6)
+                'w--', linewidth=1.2, alpha=0.9)
     
-    # Set labels with spacing
-    ax1.set_xlabel(r'Distance $x$ [m]', labelpad=15)
-    ax1.set_ylabel(r'Time $t$ [s]', labelpad=15)
+    # Set labels
+    ax1.set_xlabel(r'$x$ [m]', labelpad=8)
+    ax1.set_ylabel(r'$t$ [s]', labelpad=8)
+    ax1.set_zlabel(r'$E$ [J/m$^3$]', labelpad=8)
     
-    # Z-label with special handling
-    ax1.set_zlabel(r'$E$ [J/m$^3$]', labelpad=25)
-    ax1.zaxis.set_rotate_label(False)  # Prevent rotation
+    # Panel label
+    ax1.text2D(0.05, 0.92, '(a)', transform=ax1.transAxes, fontsize=12, fontweight='bold')
     
-    ax1.set_title('(a)', fontsize=16, loc='left', pad=10)
-    ax1.view_init(elev=20, azim=-50)  # Adjusted for better z-label visibility
+    ax1.view_init(elev=22, azim=-50)
     ax1.set_xlim(0, 200)
     ax1.set_ylim(t_sub[0], t_sub[-1])
     ax1.set_zlim(energy_min, energy_max)
-    ax1.grid(True, alpha=0.3)
+    
+    # Clean appearance
     ax1.xaxis.pane.fill = False
     ax1.yaxis.pane.fill = False
     ax1.zaxis.pane.fill = False
+    ax1.xaxis.pane.set_edgecolor('lightgray')
+    ax1.yaxis.pane.set_edgecolor('lightgray')
+    ax1.zaxis.pane.set_edgecolor('lightgray')
+    ax1.grid(True, alpha=0.25, linestyle='-', linewidth=0.4)
+    ax1.tick_params(axis='both', which='major', labelsize=8, pad=2)
     
-    # Adjust tick parameters for z-axis
-    ax1.tick_params(axis='z', which='major', pad=10)
+    # Right panel - Sparse vegetation (b)
+    ax2 = fig.add_subplot(gs[0, 1], projection='3d')
     
-    # Bottom panel - Sparse vegetation
-    ax2 = fig.add_subplot(212, projection='3d')
+    # Create surface plot
+    surf2 = ax2.plot_surface(X, T, energy_sparse_sub, cmap='plasma', norm=norm,
+                              linewidth=0, antialiased=True, alpha=0.95,
+                              rcount=80, ccount=80, shade=True)
     
-    # Create the wireframe
-    ax2.plot_wireframe(X, T, energy_sparse_sub, color='black', linewidth=0.5, alpha=0.8)
-    
-    # Add vegetation zone indicators
+    # Add vegetation zone boundary lines
     for t_val in [t_sub[0], t_sub[-1]]:
         ax2.plot([veg_start, veg_start], [t_val, t_val], [energy_min, energy_max], 
-                'g--', linewidth=2, alpha=0.6)
+                'w--', linewidth=1.2, alpha=0.9)
         ax2.plot([veg_end, veg_end], [t_val, t_val], [energy_min, energy_max], 
-                'g--', linewidth=2, alpha=0.6)
+                'w--', linewidth=1.2, alpha=0.9)
     
-    # Set labels with spacing
-    ax2.set_xlabel(r'Distance $x$ [m]', labelpad=15)
-    ax2.set_ylabel(r'Time $t$ [s]', labelpad=15)
+    # Set labels
+    ax2.set_xlabel(r'$x$ [m]', labelpad=8)
+    ax2.set_ylabel(r'$t$ [s]', labelpad=8)
+    ax2.set_zlabel(r'$E$ [J/m$^3$]', labelpad=8)
     
-    # Z-label with special handling
-    ax2.set_zlabel(r'$E$ [J/m$^3$]', labelpad=25)
-    ax2.zaxis.set_rotate_label(False)  # Prevent rotation
+    # Panel label
+    ax2.text2D(0.05, 0.92, '(b)', transform=ax2.transAxes, fontsize=12, fontweight='bold')
     
-    ax2.set_title('(b)', fontsize=16, loc='left', pad=10)
-    ax2.view_init(elev=20, azim=-50)  # Adjusted for better z-label visibility
+    ax2.view_init(elev=22, azim=-50)
     ax2.set_xlim(0, 200)
     ax2.set_ylim(t_sub[0], t_sub[-1])
     ax2.set_zlim(energy_min, energy_max)
-    ax2.grid(True, alpha=0.3)
+    
+    # Clean appearance
     ax2.xaxis.pane.fill = False
     ax2.yaxis.pane.fill = False
     ax2.zaxis.pane.fill = False
+    ax2.xaxis.pane.set_edgecolor('lightgray')
+    ax2.yaxis.pane.set_edgecolor('lightgray')
+    ax2.zaxis.pane.set_edgecolor('lightgray')
+    ax2.grid(True, alpha=0.25, linestyle='-', linewidth=0.4)
+    ax2.tick_params(axis='both', which='major', labelsize=8, pad=2)
     
-    # Adjust tick parameters for z-axis
-    ax2.tick_params(axis='z', which='major', pad=10)
+    # Add horizontal colorbar spanning both panels at bottom
+    cbar_ax = fig.add_axes([0.15, 0.08, 0.7, 0.025])
+    cbar = fig.colorbar(surf1, cax=cbar_ax, orientation='horizontal')
+    cbar.set_label(r'$E$ [J/m$^3$]', fontsize=11, labelpad=5)
+    cbar.ax.tick_params(labelsize=9)
     
-    # Use tight layout with extra padding
-    plt.tight_layout(pad=3.0)
-    
-    # Save with manual bbox to ensure nothing is cut off
     plt.savefig(figs_dir / 'energy_density_3d_spatiotemporal.png', 
                 dpi=300, 
                 bbox_inches='tight',
-                pad_inches=1.0,
                 facecolor='white',
-                edgecolor='none')
+                edgecolor='none',
+                pad_inches=0.1)
     plt.close()
+    print("  Saved: energy_density_3d_spatiotemporal.png")
 
 def perform_energy_analysis(data):
     """Perform quantitative analysis of wave energy density."""

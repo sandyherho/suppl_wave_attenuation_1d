@@ -1,17 +1,21 @@
 #!/usr/bin/env python
 """
 Wave Envelope and RMS Velocity Analysis for Wave Attenuation through Vegetation
+Revised version with cleaner formatting for publication
 
 This script analyzes wave envelope and root-mean-square velocity data from 
 numerical simulations of wave propagation through sparse and dense vegetation patches.
 
 Author: Sandy Herho <sandy.herho@email.ucr.edu>
 Date: 08/04/2025
+Revised: 12/18/2025
 """
 
 import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 import os
 from pathlib import Path
 
@@ -27,14 +31,18 @@ def setup_directories():
 
 def setup_plotting():
     """Configure matplotlib for publication-quality figures."""
-    plt.style.use("fivethirtyeight")
-    plt.rcParams['font.size'] = 12
-    plt.rcParams['axes.labelsize'] = 14
-    plt.rcParams['axes.titlesize'] = 16
-    plt.rcParams['xtick.labelsize'] = 12
-    plt.rcParams['ytick.labelsize'] = 12
-    plt.rcParams['legend.fontsize'] = 12
+    plt.rcParams['font.size'] = 11
+    plt.rcParams['axes.labelsize'] = 12
+    plt.rcParams['axes.titlesize'] = 14
+    plt.rcParams['xtick.labelsize'] = 10
+    plt.rcParams['ytick.labelsize'] = 10
+    plt.rcParams['legend.fontsize'] = 10
     plt.rcParams['figure.dpi'] = 300
+    plt.rcParams['axes.linewidth'] = 0.8
+    plt.rcParams['grid.linewidth'] = 0.5
+    plt.rcParams['lines.linewidth'] = 1.5
+    plt.rcParams['mathtext.fontset'] = 'dejavusans'
+    plt.rcParams['font.family'] = 'DejaVu Sans'
 
 def load_data():
     """Load and extract data from NetCDF files."""
@@ -55,7 +63,7 @@ def load_data():
     return data
 
 def create_wave_envelope_figure(data, figs_dir):
-    """Create wave envelope comparison figure."""
+    """Create wave envelope comparison figure with clean professional formatting."""
     print("Creating wave envelope figure...")
     
     # Parameters
@@ -64,55 +72,54 @@ def create_wave_envelope_figure(data, figs_dir):
     color_dense = '#1f77b4'
     color_sparse = '#ff7f0e'
     color_veg = '#2ca02c'
-    alpha_veg = 0.15
+    alpha_veg = 0.2
     
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(13, 10), sharex=True, sharey=True)
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8), sharex=True, sharey=True)
     
-    # Top panel - Dense vegetation
-    ax1.plot(data['x'], data['wave_envelope_dense'], color=color_dense, linewidth=2.5)
-    ax1.axvspan(veg_start, veg_end, alpha=alpha_veg, color=color_veg)
-    ax1.axvline(x=veg_start, color=color_veg, alpha=0.5, linestyle='--', linewidth=1)
-    ax1.axvline(x=veg_end, color=color_veg, alpha=0.5, linestyle='--', linewidth=1)
+    # Top panel - Dense vegetation (a)
+    ax1.plot(data['x'], data['wave_envelope_dense'], color=color_dense, linewidth=2)
+    ax1.axvspan(veg_start, veg_end, alpha=alpha_veg, color=color_veg, label='Vegetation Zone')
+    ax1.axvline(x=veg_start, color=color_veg, alpha=0.6, linestyle='--', linewidth=1)
+    ax1.axvline(x=veg_end, color=color_veg, alpha=0.6, linestyle='--', linewidth=1)
     ax1.set_xlim([0, 200])
     ax1.set_ylim([0, 0.5])
-    # Remove individual ylabel
-    # ax1.set_ylabel(r'Wave Envelope $A_{env}(x)$ [m]')
-    ax1.grid(True, alpha=0.3)
-    ax1.text(0.02, 0.95, '(a)', transform=ax1.transAxes, fontsize=16, fontweight='bold', va='top')
+    ax1.set_ylabel(r'$A_{\mathrm{env}}$ [m]')
+    ax1.grid(True, alpha=0.3, linestyle='-', linewidth=0.5)
+    ax1.text(0.02, 0.92, '(a)', transform=ax1.transAxes, fontsize=12, fontweight='bold')
+    ax1.tick_params(direction='in', which='both')
     
-    # Bottom panel - Sparse vegetation
-    ax2.plot(data['x'], data['wave_envelope_sparse'], color=color_sparse, linewidth=2.5)
+    # Bottom panel - Sparse vegetation (b)
+    ax2.plot(data['x'], data['wave_envelope_sparse'], color=color_sparse, linewidth=2)
     ax2.axvspan(veg_start, veg_end, alpha=alpha_veg, color=color_veg)
-    ax2.axvline(x=veg_start, color=color_veg, alpha=0.5, linestyle='--', linewidth=1)
-    ax2.axvline(x=veg_end, color=color_veg, alpha=0.5, linestyle='--', linewidth=1)
-    ax2.set_xlabel(r'Distance $x$ [m]')
-    # Remove individual ylabel
-    # ax2.set_ylabel(r'Wave Envelope $A_{env}(x)$ [m]')
-    ax2.grid(True, alpha=0.3)
-    ax2.text(0.02, 0.95, '(b)', transform=ax2.transAxes, fontsize=16, fontweight='bold', va='top')
-    
-    # Add single ylabel for entire figure
-    fig.supylabel(r'Wave Envelope $A_{env}(x)$ [m]', fontsize=16)
+    ax2.axvline(x=veg_start, color=color_veg, alpha=0.6, linestyle='--', linewidth=1)
+    ax2.axvline(x=veg_end, color=color_veg, alpha=0.6, linestyle='--', linewidth=1)
+    ax2.set_xlabel(r'$x$ [m]')
+    ax2.set_ylabel(r'$A_{\mathrm{env}}$ [m]')
+    ax2.grid(True, alpha=0.3, linestyle='-', linewidth=0.5)
+    ax2.text(0.02, 0.92, '(b)', transform=ax2.transAxes, fontsize=12, fontweight='bold')
+    ax2.tick_params(direction='in', which='both')
     
     # Create custom legend elements
-    from matplotlib.lines import Line2D
-    from matplotlib.patches import Patch
     legend_elements = [
-        Line2D([0], [0], color=color_dense, lw=2.5, label='Dense Vegetation'),
-        Line2D([0], [0], color=color_sparse, lw=2.5, label='Sparse Vegetation'),
-        Patch(facecolor=color_veg, alpha=alpha_veg, label='Vegetation Zone')
+        Line2D([0], [0], color=color_dense, lw=2, label='Dense Vegetation'),
+        Line2D([0], [0], color=color_sparse, lw=2, label='Sparse Vegetation'),
+        Patch(facecolor=color_veg, alpha=alpha_veg, edgecolor=color_veg, 
+              linestyle='--', linewidth=1, label='Vegetation Zone')
     ]
     
     # Add legend at the bottom
-    fig.legend(handles=legend_elements, loc='lower center', ncol=3, bbox_to_anchor=(0.5, -0.02), frameon=True)
+    fig.legend(handles=legend_elements, loc='lower center', ncol=3, 
+               bbox_to_anchor=(0.5, -0.02), frameon=True, edgecolor='gray',
+               fancybox=False)
     
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.1, left=0.1)  # Adjust left margin for supylabel
-    plt.savefig(figs_dir / 'wave_envelope_comparison.png', dpi=300, bbox_inches='tight')
+    plt.subplots_adjust(bottom=0.12, hspace=0.08)
+    plt.savefig(figs_dir / 'wave_envelope_comparison.png', dpi=300, bbox_inches='tight',
+                facecolor='white', edgecolor='none')
     plt.close()
 
 def create_urms_figure(data, figs_dir):
-    """Create RMS velocity comparison figure."""
+    """Create RMS velocity comparison figure with clean professional formatting."""
     print("Creating RMS velocity figure...")
     
     # Parameters
@@ -121,51 +128,50 @@ def create_urms_figure(data, figs_dir):
     color_dense = '#1f77b4'
     color_sparse = '#ff7f0e'
     color_veg = '#2ca02c'
-    alpha_veg = 0.15
+    alpha_veg = 0.2
     
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(13, 10), sharex=True, sharey=True)
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8), sharex=True, sharey=True)
     
-    # Top panel - Dense vegetation
-    ax1.plot(data['x_face'], data['urms_dense'], color=color_dense, linewidth=2.5)
-    ax1.axvspan(veg_start, veg_end, alpha=alpha_veg, color=color_veg)
-    ax1.axvline(x=veg_start, color=color_veg, alpha=0.5, linestyle='--', linewidth=1)
-    ax1.axvline(x=veg_end, color=color_veg, alpha=0.5, linestyle='--', linewidth=1)
+    # Top panel - Dense vegetation (a)
+    ax1.plot(data['x_face'], data['urms_dense'], color=color_dense, linewidth=2)
+    ax1.axvspan(veg_start, veg_end, alpha=alpha_veg, color=color_veg, label='Vegetation Zone')
+    ax1.axvline(x=veg_start, color=color_veg, alpha=0.6, linestyle='--', linewidth=1)
+    ax1.axvline(x=veg_end, color=color_veg, alpha=0.6, linestyle='--', linewidth=1)
     ax1.set_xlim([0, 200])
-    ax1.set_ylim([0, 0.8])  # Changed from 0.5 to 0.7
-    # Remove individual ylabel
-    # ax1.set_ylabel(r'RMS Velocity $u_{rms}(x)$ [m/s]')
-    ax1.grid(True, alpha=0.3)
-    ax1.text(0.02, 0.95, '(a)', transform=ax1.transAxes, fontsize=16, fontweight='bold', va='top')
+    ax1.set_ylim([0, 0.8])
+    ax1.set_ylabel(r'$u_{\mathrm{rms}}$ [m/s]')
+    ax1.grid(True, alpha=0.3, linestyle='-', linewidth=0.5)
+    ax1.text(0.02, 0.92, '(a)', transform=ax1.transAxes, fontsize=12, fontweight='bold')
+    ax1.tick_params(direction='in', which='both')
     
-    # Bottom panel - Sparse vegetation
-    ax2.plot(data['x_face'], data['urms_sparse'], color=color_sparse, linewidth=2.5)
+    # Bottom panel - Sparse vegetation (b)
+    ax2.plot(data['x_face'], data['urms_sparse'], color=color_sparse, linewidth=2)
     ax2.axvspan(veg_start, veg_end, alpha=alpha_veg, color=color_veg)
-    ax2.axvline(x=veg_start, color=color_veg, alpha=0.5, linestyle='--', linewidth=1)
-    ax2.axvline(x=veg_end, color=color_veg, alpha=0.5, linestyle='--', linewidth=1)
-    ax2.set_xlabel(r'Distance $x$ [m]')  # Changed to show x_face
-    # Remove individual ylabel
-    # ax2.set_ylabel(r'RMS Velocity $u_{rms}(x)$ [m/s]')
-    ax2.grid(True, alpha=0.3)
-    ax2.text(0.02, 0.95, '(b)', transform=ax2.transAxes, fontsize=16, fontweight='bold', va='top')
-    
-    # Add single ylabel for entire figure
-    fig.supylabel(r'RMS Velocity $u_{rms}(x)$ [m/s]', fontsize=16)
+    ax2.axvline(x=veg_start, color=color_veg, alpha=0.6, linestyle='--', linewidth=1)
+    ax2.axvline(x=veg_end, color=color_veg, alpha=0.6, linestyle='--', linewidth=1)
+    ax2.set_xlabel(r'$x$ [m]')
+    ax2.set_ylabel(r'$u_{\mathrm{rms}}$ [m/s]')
+    ax2.grid(True, alpha=0.3, linestyle='-', linewidth=0.5)
+    ax2.text(0.02, 0.92, '(b)', transform=ax2.transAxes, fontsize=12, fontweight='bold')
+    ax2.tick_params(direction='in', which='both')
     
     # Create custom legend elements
-    from matplotlib.lines import Line2D
-    from matplotlib.patches import Patch
     legend_elements = [
-        Line2D([0], [0], color=color_dense, lw=2.5, label='Dense Vegetation'),
-        Line2D([0], [0], color=color_sparse, lw=2.5, label='Sparse Vegetation'),
-        Patch(facecolor=color_veg, alpha=alpha_veg, label='Vegetation Zone')
+        Line2D([0], [0], color=color_dense, lw=2, label='Dense Vegetation'),
+        Line2D([0], [0], color=color_sparse, lw=2, label='Sparse Vegetation'),
+        Patch(facecolor=color_veg, alpha=alpha_veg, edgecolor=color_veg,
+              linestyle='--', linewidth=1, label='Vegetation Zone')
     ]
     
     # Add legend at the bottom
-    fig.legend(handles=legend_elements, loc='lower center', ncol=3, bbox_to_anchor=(0.5, -0.02), frameon=True)
+    fig.legend(handles=legend_elements, loc='lower center', ncol=3, 
+               bbox_to_anchor=(0.5, -0.02), frameon=True, edgecolor='gray',
+               fancybox=False)
     
     plt.tight_layout()
-    plt.subplots_adjust(bottom=0.1, left=0.1)  # Adjust left margin for supylabel
-    plt.savefig(figs_dir / 'urms_comparison.png', dpi=300, bbox_inches='tight')
+    plt.subplots_adjust(bottom=0.12, hspace=0.08)
+    plt.savefig(figs_dir / 'urms_comparison.png', dpi=300, bbox_inches='tight',
+                facecolor='white', edgecolor='none')
     plt.close()
 
 def perform_analysis(data):
